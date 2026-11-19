@@ -1,0 +1,19 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editors
+*.swp
+.idea/
+.vscode/
+
+# Logs and local caches
+*.log
+.cache/
+__pycache__/
+*.pyc
+
+# Local scene studies and scratch renders (not published)
+preview/
+*.psd
+*.xcf
