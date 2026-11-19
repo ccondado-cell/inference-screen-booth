@@ -7,10 +7,39 @@
 
 ## Where the file lives
 
-`inference-screen-booth/index.html` is the published copy. The working notes
-folder (`talks/inference-booth-screen/`) and the Documents mirror are copies
-kept in sync by `rsync`, verified with `md5sum`. When the two disagree, this
-repo wins.
+This clone is the **only** real copy. Every other path is a symlink, so an edit
+here is immediately the file Carlos opens, with nothing to sync and no second
+copy to drift.
+
+```
+inference-screen-booth/index.html   the published page, served by GitHub Pages
+inference-screen-booth/docs/        copy doc, decision log, change request, addendum
+inference-screen-booth/assets/      brand art, glyphs, logo
+inference-screen-booth/fonts/       the three woff2 files
+inference-screen-booth/tools/       validate.py, verify_icons.py
+```
+
+Links into the two places the page is opened from:
+
+```
+talks/inference-booth-screen/index.html   -> this repo's index.html
+talks/inference-booth-screen/assets       -> this repo's assets (directory link)
+talks/inference-booth-screen/fonts        -> this repo's fonts
+talks/inference-booth-screen/tools        -> this repo's tools
+Documents/talks/inference-booth-screen/   the same, for review and sharing
+```
+
+Relative paths still resolve through the links, because the browser follows the
+directory links, so the page renders identically from either path.
+
+**Two rules that follow from this.**
+
+1. Edit files here, never in the symlinked folders. There is one copy.
+2. Never `rsync --delete` into those folders. It replaces links with copies and
+   the drift comes back.
+
+`preview/` (scene studies) and `BUILD-REPORT.md` live only in the talks folder:
+working material, not published. `preview/` is gitignored here.
 
 ## Done
 
