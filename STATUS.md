@@ -4,6 +4,14 @@
 > (done / in flight / next / how to verify).
 
 **Build version:** v1.3.5, Nov 19, 2026. Fifteen scenes, 96 second loop.
+**Live:** https://ccondado-cell.github.io/inference-screen-booth/ (Pages, main branch, root
+folder, rebuilds on push).
+
+**Publishing gotcha, recorded once.** Pages was enabled on this repo while `main` pointed at
+the root folder, yet no build had ever run: `has_pages` was true, the `github-pages`
+environment existed, and the site returned GitHub's "Site not found". The first successful
+build came from a plain push to `main`, not from the Pages settings. If the site ever 404s
+again with the setting looking correct, push any commit and the build will queue.
 
 ## Where the file lives
 
