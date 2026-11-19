@@ -82,6 +82,16 @@ references, credits on the scenes that need them, 15 x 6.4s loop math, animation
 every scene, and `node --check` on the extracted script. The expected-copy tables live in that
 file, so **a copy change and a table change belong in the same commit**.
 
+## Publishing
+
+GitHub Pages serves this repository from `main`, root folder, and rebuilds on every push:
+`https://ccondado-cell.github.io/inference-screen-booth/`. Nothing else deploys the site, so
+a change that is not committed is not live, and there is no generated output to keep in sync.
+
+Before pushing, run the two checks above. They are the gate, not a suggestion: a copy change
+that skips the expected-copy tables in `tools/validate.py` will fail the next person who runs
+them, and the failure will look like a copy bug rather than a stale table.
+
 ## Asset credits and usage
 
 - **3D backdrops:** official Red Hat AI brand assets (Light1 set).
