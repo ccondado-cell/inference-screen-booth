@@ -411,6 +411,32 @@ def main():
     except FileNotFoundError:
         ok_node = False
         node_detail = 'node not found'
+    # Scene 7: the dots have to ride the spokes. The v1.3 build cut a shallow diagonal
+    # from (140, sy) to (780, 190), which put the top dot 73 units above its own line at
+    # the node's left edge and made all five converge 180 units to the right of the box,
+    # where they had already faded out. The claim is "five inputs, one runtime", so the
+    # geometry is locked here: dot start equals the spoke start, dot end equals the box's
+    # left edge, and every leg runs at the speed the spine speaks.
+    s7 = scene_blocks[7]
+    s7_geom = dict(re.findall(r'const (S7_[A-Z_]+) = (\d+);', html))
+    s7_want = {'S7_START_X': '132', 'S7_NODE_LEFT': '430', 'S7_NODE_RIGHT': '600',
+               'S7_MID': '190', 'S7_SPEED': '480', 'S7_OUT': '156'}
+    spokes = re.findall(r'<line x1="(\d+)" y1="(\d+)" x2="(\d+)" y2="(\d+)"', s7)
+    spokes_ok = bool(spokes) and all(
+        x1 == '132' and x2 == '430' and y2 == '190' and y1 in ('56', '123', '190', '257', '324')
+        for x1, y1, x2, y2 in spokes)
+    check('V15. Scene 7 dots ride the spokes into the node at 480 u/s, one stream out',
+          s7_geom == s7_want
+          and spokes_ok
+          and re.search(r'id="run-out"', s7) is not None
+          and 'S7_NODE_LEFT - S7_START_X' in html
+          and 'S7_MID - sy' in html
+          and '/ S7_SPEED' in html
+          and '--dx:640px' not in html,
+          'geom={} spokes={} out_group={} old_diagonal={}'.format(
+              s7_geom, len(spokes), bool(re.search(r'id="run-out"', s7)),
+              '--dx:640px' in html))
+
     check('V14. Extracted script parses under node --check', ok_node, node_detail)
 
     fails = [r for r in results if not r[1]]

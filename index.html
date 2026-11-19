@@ -819,11 +819,15 @@
                     <image href="./assets/icons/microphone-270.png" x="74" y="164" width="52" height="52"/>
                     <image href="./assets/icons/computer-visionview-294.png" x="74" y="231" width="52" height="52"/>
                     <image href="./assets/icons/gpu-124.png" x="74" y="298" width="52" height="52"/>
-                    <!-- tokens flowing through one runtime node -->
+                    <!-- five inputs, each riding its own spoke into the node. They are
+                         consumed at the box's left edge, which is where the five become
+                         one, and the single stream below leaves the right edge. -->
                     <g id="run-dots"></g>
                     <!-- the runtime node -->
                     <rect x="430" y="120" width="170" height="140" rx="14" fill="rgba(238,0,0,0.05)" stroke="var(--rh-red)" stroke-width="3"/>
                     <text x="515" y="198" text-anchor="middle" fill="var(--rh-red)" font-family="'Red Hat Display', sans-serif" font-weight="700" font-size="27">Runtime</text>
+                    <!-- the one stream that leaves the runtime -->
+                    <g id="run-out"></g>
                 </svg>
             </div>
             <div class="text-block">
@@ -1136,20 +1140,55 @@
         gpuRequests.innerHTML = reqHTML;
     }
 
-    // Init Scene 7 runtime flow: five streams (model, text, voice, vision, chip)
-    // flowing through the one runtime node and out the other side
+    // Init Scene 7 runtime flow: five inputs (model, text, voice, vision, chip), each
+    // riding its own spoke into the runtime's left edge and consumed there, then one
+    // stream leaving the right edge.
+    //
+    // The v1.3 build cut a shallow diagonal from (140, sy) to (780, 190) instead, which
+    // was not the spoke's angle: at the node's left edge the top dot sat 73 units above
+    // its line, all five crossed the box rather than entering it, and the five converged
+    // at x 780, which is 180 units to the right of the node and already faded to zero.
+    // So the frame said "five inputs, one runtime" in copy and "five streaks passing by"
+    // in motion. Riding the spokes puts the convergence at the box's edge, where the
+    // claim is.
+    const S7_START_X = 132;    // right edge of the icon column, where each spoke starts
+    const S7_NODE_LEFT = 430;  // the runtime box's left edge, where the five become one
+    const S7_NODE_RIGHT = 600;
+    const S7_MID = 190;        // the box's optical centre line
+    const S7_SPEED = 480;      // units per second, the speed scenes 9 and 10 run at
+    const S7_OUT = 156;        // the single stream leaving the right edge
+
+    function s7dot(cx, cy, dx, dy, dur, del) {
+        return `<circle cx="${cx}" cy="${cy}" r="6" fill="var(--rh-red)" class="flow-dot" `
+             + `style="--dx:${dx.toFixed(1)}px; --dy:${dy.toFixed(1)}px; `
+             + `--fdur:${dur.toFixed(3)}s; --del:${del.toFixed(3)}s;"/>`;
+    }
+
     const runDots = document.getElementById('run-dots');
     if (runDots) {
-        const streams = [56, 123, 190, 257, 324]; // source y positions
+        const streams = [56, 123, 190, 257, 324]; // icon centres
         let runHTML = '';
         streams.forEach((sy, si) => {
-            const dy = 190 - sy;
+            const dx = S7_NODE_LEFT - S7_START_X;
+            const dy = S7_MID - sy;
+            const dur = Math.sqrt(dx * dx + dy * dy) / S7_SPEED;
+            // three per spoke, a third of a leg apart, so no line is ever empty;
+            // each spoke starts a beat later than the one above it
             for (let i = 0; i < 3; i++) {
-                const del = (si * 0.5 + i * 0.8).toFixed(1);
-                runHTML += `<circle cx="140" cy="${sy}" r="6" fill="var(--rh-red)" class="flow-dot" style="--dx:640px; --dy:${dy}px; --fdur:2.6s; --del:${del}s;"/>`;
+                runHTML += s7dot(S7_START_X, sy, dx, dy, dur, si * 0.11 + (i * dur) / 3);
             }
         });
         runDots.innerHTML = runHTML;
+    }
+
+    const runOut = document.getElementById('run-out');
+    if (runOut) {
+        const outDur = S7_OUT / S7_SPEED;
+        let outHTML = '';
+        for (let i = 0; i < 3; i++) {
+            outHTML += s7dot(S7_NODE_RIGHT + 4, S7_MID, S7_OUT, 0, outDur, (i * outDur) / 3);
+        }
+        runOut.innerHTML = outHTML;
     }
 
     // Init Scene 8 optimization flow: two streams, and the only difference between

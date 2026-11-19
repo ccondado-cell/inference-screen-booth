@@ -1015,6 +1015,54 @@ These are not re opened per scene.
 7. Upper 40 percent of art stays empty.
 8. Zero network requests.
 
+## Scene 7, Runtime: five inputs into one node (v1.3.6, Nov 19)
+
+**Your note.** "The dots could flow on top of the lines that connect the icons to the
+runtime." You were describing a bug I had not seen, and the measurement is worse than the
+impression.
+
+**What the v1.3 build actually did.** Each dot ran one straight translate from `(140, sy)` to
+`(780, 190)`. That is not the spoke's angle:
+
+| at x | dot y | its spoke y |
+|---|---|---|
+| 430, the box's left edge | 117 | 190 |
+| 600, the box's right edge | 152 | 190 |
+| 780, where all five converge | 190 | past the node |
+
+So the top stream ran 73 units above its own line, all five crossed the face of the box
+instead of entering it, and the point where five became one sat 180 units to the right of the
+node, at the moment opacity had already reached zero. The frame said "five inputs, one
+runtime" in copy and "five streaks passing by" in motion.
+
+**On the table**
+
+| Option | Motion | Cost |
+|---|---|---|
+| A | Dots ride the spoke, bend at the node, continue out the right side | Purest flow, needs `offset-path`, and a mid-flight bend I cannot verify without a browser |
+| B | Dots ride the spoke, are consumed at the box's left edge, one stream leaves the right edge | No bend, no new technique, and the convergence lands exactly where the claim is |
+| C | Dots ride the spokes only, nothing leaves | Simplest, but the node reads as a sink |
+
+Built as a preview with today's version as the control (`preview/scene7-variants.html`, keys
+1, 2, 3), plus a no-spokes variant for comparison.
+
+**DECIDED: B.**
+
+- Geometry locked: start `(132, sy)`, end `(430, 190)`, five spokes at icon centres 56, 123,
+  190, 257, 324.
+- Speed 480 units per second, matching Distribute and Gate. Legs run 0.62 to 0.68 seconds,
+  against the old build's 246 units per second, which was the slowest traffic in the loop.
+- Three dots per spoke, a third of a leg apart, each spoke starting 0.11s after the one above
+  it so the five trains never pulse in unison.
+- One stream of three leaves the right edge, 156 units, 0.33 seconds.
+- Eighteen dots on the frame; the gate carries fourteen.
+- The no-spokes variant was rejected on read, not on principle: at 3 metres in a 6.4 second
+  cut, five trains with no structure under them were judged more likely to read as scattered
+  motion than as one input stream per icon. It stays on the preview page.
+
+**What this changes about the scene's argument.** The previous frame illustrated the box. This
+one illustrates the sentence: five different things go in, one thing comes out.
+
 ## Assembly checklist
 
 When the last `DECISION` line is filled, the build prompt is assembled from:

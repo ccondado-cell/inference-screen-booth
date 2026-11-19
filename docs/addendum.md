@@ -1,5 +1,66 @@
 # Inference Booth Screen: Addendum
 
+## v1.3.6, Nov 19, 2026 (scene 7 dots ride the spokes)
+
+**Change class:** one scene's motion rebuilt, one output group added, validator gains V15. No
+copy changed, no scene added or removed, no timing changed anywhere else.
+
+**The bug.** Carlos noticed the dots on scene 7 were not on the connector lines. They were
+worse than off the lines. Each dot ran a single translate from `(140, sy)` to `(780, 190)`,
+which is a shallower angle than any spoke, so:
+
+| at x | dot y | its own spoke |
+|---|---|---|
+| 430, box left edge | 117 | 190 |
+| 600, box right edge | 152 | 190 |
+| 780, convergence | 190 | 180 units past the node |
+
+The top stream ran 73 units above its line, every stream crossed the face of the box instead
+of entering it, and the convergence of all five happened to the right of the node at the
+moment opacity hit zero. The scene asserted "five inputs, one runtime" in words and showed
+five unrelated streaks.
+
+**The fix, in geometry**
+
+| | before | now |
+|---|---|---|
+| Dot start | `(140, sy)` | `(132, sy)`, the right edge of the icon column |
+| Dot end | `(780, 190)`, outside the node | `(430, 190)`, the node's left edge, where they are consumed |
+| Speed | 246 units per second | **480**, the speed Distribute and Gate run at |
+| Leg time | 2.6s for 640 units | 0.62 to 0.68s for 298 to 327 units |
+| Dots on frame | 15, drifting | 15 in, 3 out, on five rails that are never empty |
+| Exit | implied, after the fade | one stream of three leaves the right edge, 156 units |
+
+Three dots per spoke, spaced a third of a leg apart, each spoke starting 0.11 seconds after the
+one above it so the five trains never pulse in unison. The single output stream runs at the
+same 480, so the box is neither a sink nor a pass-through that ignores its contents.
+
+**Why the exit stream exists.** With the dots consumed at the left edge, a node that emits
+nothing reads as a wall, and the "and out the other side" half of the sentence disappears. One
+short stream keeps the causal chain complete without adding a second motion language: it is
+the same dot, the same speed, the same direction.
+
+**Rejected, with the reason.** A no-spokes variant was built and compared side by side
+(`preview/scene7-variants.html`), where the five converging dot trains are the only connection
+drawn. It is the more distinctive frame and the weaker read at 3 metres: five unanchored trains
+in a 6.4 second cut were judged more likely to look like scattered motion than like one input
+per icon. The preview file stays as the record; it is not published with the repo.
+
+**Verified, not assumed.** The init block was executed against a stub DOM and every generated
+circle inspected: all fifteen input dots land on `(430, 190)` to within 0.01 units, all run at
+480 units per second to within 0.6, durations come out 0.621, 0.636 and 0.681 seconds, and all
+three output dots land on `(760, 190)`.
+
+**Validator.** New check V15 locks the six engine constants, asserts the five spokes still run
+from x 132 to x 430 at y 190 with their icon y values, asserts the output group exists, and
+asserts the retired `--dx:640px` diagonal is gone. 31 of 31 pass, `node --check` clean.
+
+**Still unverified.** The convergence at the box's left edge carries two or three dots at a
+time. If it reads as a jam rather than as delivery, the fix is two dots per spoke instead of
+three, which thins arrivals by a third without changing any speed.
+
+---
+
 ## v1.3.5, Nov 19, 2026 (the mantra scene is deleted, 16 scenes become 15)
 
 **Change class:** one scene removed, four scenes renumbered, one CSS block removed, loop

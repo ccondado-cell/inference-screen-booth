@@ -3,7 +3,7 @@
 > Handoff file: whoever touches this last updates it before ending a session
 > (done / in flight / next / how to verify).
 
-**Build version:** v1.3.5, Nov 19, 2026. Fifteen scenes, 96 second loop.
+**Build version:** v1.3.6, Nov 19, 2026. Fifteen scenes, 96 second loop.
 **Live:** https://ccondado-cell.github.io/inference-screen-booth/ (Pages, main branch, root
 folder, rebuilds on push).
 
@@ -51,6 +51,11 @@ working material, not published. `preview/` is gitignored here.
 
 ## Done
 
+- v1.3.6: scene 7's dots now ride the five spokes into the runtime's left edge at 480 units
+  per second and are consumed there, with one stream leaving the right edge. Before this they
+  ran a shallower diagonal that put the top dot 73 units above its own line and converged 180
+  units to the right of the node, so the frame contradicted its own headline. Validator gains
+  V15, which locks the geometry. 31 of 31 pass.
 - v1.3.5: the mantra scene deleted, sixteen scenes renumbered to fifteen, loop
   shortened from 102.4s to 96s. Deliver now cuts straight to the trillion.
   Validator retargeted: check 4c inverted to assert the mantra markup is gone,
